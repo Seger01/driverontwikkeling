@@ -1,0 +1,1 @@
+cmd_/home/seger/driverontwikkeling/3.3/Module.symvers := sed 's/\.ko$$/\.o/' /home/seger/driverontwikkeling/3.3/modules.order | scripts/mod/modpost -m -a  -o /home/seger/driverontwikkeling/3.3/Module.symvers -e -i Module.symvers   -T -

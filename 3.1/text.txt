@@ -1,0 +1,35 @@
+lsmod output:
+opgave_3_1             16384  0
+
+/proc/modules output:
+opgave_3_1 16384 0 - Live 0x0000000000000000 (OE)
+
+
+Kernel output:
+[ 2498.516343] Hello, world
+[ 2512.755344] Goodbye, world
+
+
+
+Command to build:
+make opgave_3_1.ko
+
+Source code:
+#include <linux/init.h>
+#include <linux/module.h>
+
+MODULE_LICENSE("Dual BSD/GPL");
+
+static int hello_init(void)
+{
+        printk(KERN_ALERT "Hello, world\n");
+        return 0;
+}
+
+static void hello_exit(void)
+{
+        printk(KERN_ALERT "Goodbye, world\n");
+}
+
+module_init(hello_init);
+module_exit(hello_exit);
