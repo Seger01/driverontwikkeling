@@ -1,0 +1,14 @@
+Aangemaakte node:
+crw-rw-rw- 1 root root 500, 0 Apr 24 10:44 /dev/opgave_3_4
+
+
+initialiseren Module dmesg output:
+[  419.252582] Hello, world
+[  419.252589] result: 0
+[  419.252590] Registered character device
+[  428.331327] hello_open()
+[  428.331351] hello_write()
+[  428.331356] hello_release()
+[  435.995699] hello_open()
+[  435.995730] hello_write()
+[  435.995736] hello_release()

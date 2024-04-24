@@ -1,10 +1,11 @@
-#include <linux/cdev.h>
+#include <linux/cdev.h> // Include for cdev related functions
 #include <linux/fs.h>
 #include <linux/init.h>
 #include <linux/module.h>
 
 MODULE_LICENSE("Dual BSD/GPL");
 
+// Define cdev structure
 static struct cdev my_cdev;
 
 static int hello_open(struct inode* inode, struct file* file) {
@@ -14,6 +15,26 @@ static int hello_open(struct inode* inode, struct file* file) {
 
 static int hello_release(struct inode* inode, struct file* file) {
     printk(KERN_ALERT "hello_release()\n");
+    return 0;
+}
+
+static int hello_init(void) {
+    printk(KERN_ALERT "Hello, world\n");
+    //
+    // int result;
+    // dev_t dev = MKDEV(0, 0); // Device number
+    //
+    // // Allocate memory for cdev
+    // cdev_init(&my_cdev, &fops);
+    //
+    // // Add cdev to the kernel
+    // result = cdev_add(&my_cdev, dev, 1);
+    // if (result < 0) {
+    //     printk(KERN_ALERT "Failed to register cdev\n");
+    //     return result;
+    // }
+    //
+    // printk(KERN_ALERT "Registered character device\n");
     return 0;
 }
 
@@ -34,29 +55,9 @@ struct file_operations fops = {
     .release = hello_release,
 };
 
-static int hello_init(void) {
-    int result;
-    dev_t dev = MKDEV(0, 0); // Device number
-
-    printk(KERN_ALERT "Hello, world\n");
-
-    // Allocate memory for cdev
-    cdev_init(&my_cdev, &fops);
-
-    // Add cdev to the kernel
-    result = cdev_add(&my_cdev, dev, 1);
-    if (result < 0) {
-        printk(KERN_ALERT "Failed to register cdev\n");
-        return result;
-    }
-
-    printk(KERN_ALERT "Registered character device\n");
-    return 0;
-}
-
 static void hello_exit(void) {
     printk(KERN_ALERT "Goodbye, world\n");
-    cdev_del(&my_cdev); // Remove cdev from the kernel
+    // cdev_del(&my_cdev); // Remove cdev from the kernel
 }
 
 module_init(hello_init);
