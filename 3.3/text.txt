@@ -1,35 +1,8 @@
-lsmod output:
-opgave_3_1             16384  0
-
-/proc/modules output:
-opgave_3_1 16384 0 - Live 0x0000000000000000 (OE)
-
-
-Kernel output:
-[ 2498.516343] Hello, world
-[ 2512.755344] Goodbye, world
-
-
-
-Command to build:
-make opgave_3_1.ko
-
-Source code:
-#include <linux/init.h>
-#include <linux/module.h>
-
-MODULE_LICENSE("Dual BSD/GPL");
-
-static int hello_init(void)
-{
-        printk(KERN_ALERT "Hello, world\n");
-        return 0;
-}
-
-static void hello_exit(void)
-{
-        printk(KERN_ALERT "Goodbye, world\n");
-}
-
-module_init(hello_init);
-module_exit(hello_exit);
+/usr/bin/make opgave_3_3.ko obj-m=opgave_3_3.o -C /lib/modules/5.15.0-92-generic/build M=/home/seger/driverontwikkeling/3.3 modules
+make[1]: Entering directory '/usr/src/linux-headers-5.15.0-92-generic'
+  CC [M]  /home/seger/driverontwikkeling/3.3/opgave_3_3.o
+  MODPOST /home/seger/driverontwikkeling/3.3/Module.symvers
+  CC [M]  /home/seger/driverontwikkeling/3.3/opgave_3_3.mod.o
+  LD [M]  /home/seger/driverontwikkeling/3.3/opgave_3_3.ko
+  BTF [M] /home/seger/driverontwikkeling/3.3/opgave_3_3.ko
+make[1]: Leaving directory '/usr/src/linux-headers-5.15.0-92-generic'

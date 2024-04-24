@@ -36,15 +36,18 @@ struct file_operations fops = {
 
 static int hello_init(void) {
     int result;
-    dev_t dev = MKDEV(0, 0); // Device number
+    dev_t dev = MKDEV(500, 0); // Device number
+    struct cdev* my_cdev = cdev_alloc();
 
     printk(KERN_ALERT "Hello, world\n");
 
     // Allocate memory for cdev
-    cdev_init(&my_cdev, &fops);
+    // cdev_init(&my_cdev, &fops);
+    my_cdev->ops = &fops;
 
     // Add cdev to the kernel
-    result = cdev_add(&my_cdev, dev, 1);
+    result = cdev_add(my_cdev, dev, 1);
+    printk(KERN_ALERT "result: %d", result);
     if (result < 0) {
         printk(KERN_ALERT "Failed to register cdev\n");
         return result;
