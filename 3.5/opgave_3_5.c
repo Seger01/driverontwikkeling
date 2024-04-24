@@ -18,8 +18,10 @@ static int hello_release(struct inode* inode, struct file* file) {
 }
 
 static ssize_t hello_read(struct file* file, char __user* buf, size_t lbuf, loff_t* ppos) {
-    printk(KERN_ALERT "hello_read()\n");
-    return 0;
+    printk(KERN_ALERT "hello_read() %d\n", (int)lbuf);
+    buf[0] = 'h';
+    buf[1] = '2';
+    return 4;
 }
 
 static ssize_t hello_write(struct file* file, const char __user* buf, size_t lbuf, loff_t* ppos) {
@@ -35,6 +37,12 @@ struct file_operations fops = {
 };
 
 static int hello_init(void) {
+    // dev_t device_number;
+    // int result;
+    // device_number = MKDEV(major, minor);
+    // device = cdev_alloc() result = register_chrdev_region(device_number, amount, driver_name);
+    // return result;
+
     int result;
     dev_t dev = MKDEV(500, 0); // Device number
     struct cdev* my_cdev = cdev_alloc();
