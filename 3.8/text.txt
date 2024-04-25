@@ -1,0 +1,8 @@
+Output dmesg:
+[  586.691028] Hello, world! My param value: 12345
+[  586.691037] result: 0
+[  586.691038] Registered character device
+
+Inladen module:
+sudo insmod opgave_3_8.ko my_param=12345
+

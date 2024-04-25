@@ -19,30 +19,37 @@ static int hello_release(struct inode* inode, struct file* file) {
 
 static ssize_t hello_read(struct file* file, char __user* buf, size_t lbuf, loff_t* ppos) {
     static bool isRead = false;
+
+    char temp_write_buffer[100] = {0};
     printk(KERN_ALERT "hello_read() %zu\n", lbuf);
 
     if (isRead == true) {
-        return -ENODATA; // Return error indicating insufficient buffer size
+        isRead = false;
+        return 0;
     }
 
     // Check if buffer is large enough to hold data
-    if (lbuf < 2) {
+    if (lbuf < 3) {
         printk(KERN_ALERT "Insufficient buffer size\n");
         return -EINVAL; // Return error indicating insufficient buffer size
     }
 
+    temp_write_buffer[0] = 'h';
+    temp_write_buffer[1] = '2';
+    temp_write_buffer[2] = '\n';
+
     // Copy data to user space buffer
-    if (copy_to_user(buf, "h2", 2)) {
+    if (copy_to_user(buf, temp_write_buffer, 3)) {
         printk(KERN_ALERT "Failed to copy data to user space\n");
         return -EFAULT; // Return error indicating copy failure
     }
 
     // Update file position
-    *ppos += 2;
+    *ppos += 3;
 
     // return -ENODATA; // Return error indicating insufficient buffer size
     isRead = true;
-    return 2; // Return the number of bytes read
+    return 3; // Return the number of bytes read
 }
 
 // static ssize_t hello_read(struct file* file, char __user* buf, size_t lbuf, loff_t* ppos) {

@@ -1,0 +1,1 @@
+cmd_/home/seger/driverontwikkeling/3.6/opgave_3_6.ko := ld -r -m elf_x86_64 -z noexecstack --build-id=sha1  -T scripts/module.lds -o /home/seger/driverontwikkeling/3.6/opgave_3_6.ko /home/seger/driverontwikkeling/3.6/opgave_3_6.o /home/seger/driverontwikkeling/3.6/opgave_3_6.mod.o;  true
