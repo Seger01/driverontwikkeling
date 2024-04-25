@@ -1,3 +1,7 @@
+Proof:
+seger@seger-VirtualBox:~/driverontwikkeling/WK1/3.8$ cat /sys/module/opgave_3_8/parameters/my_param 
+1234
+
 Output dmesg:
 [  586.691028] Hello, world! My param value: 12345
 [  586.691037] result: 0
