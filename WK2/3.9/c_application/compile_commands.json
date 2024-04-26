@@ -1,0 +1,14 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-o",
+      "application",
+      "main.c"
+    ],
+    "directory": "/home/seger/driverontwikkeling/3.6/c_application",
+    "file": "/home/seger/driverontwikkeling/3.6/c_application/main.c",
+    "output": "/home/seger/driverontwikkeling/3.6/c_application/application"
+  }
+]

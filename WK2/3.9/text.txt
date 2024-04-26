@@ -1,0 +1,8 @@
+Module output:
+[ 1986.301316] Hello, world! My param value: 0
+[ 1986.301321] Allocated major number: 236
+[ 1986.301323] result: 0
+[ 1986.301324] Registered character device
+
+In /proc/modules:
+236 my_device

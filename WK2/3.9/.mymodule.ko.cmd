@@ -1,0 +1,1 @@
+cmd_/home/seger/driverontwikkeling/WK2/3.9/mymodule.ko := ld -r -m elf_x86_64 -z noexecstack --build-id=sha1  -T scripts/module.lds -o /home/seger/driverontwikkeling/WK2/3.9/mymodule.ko /home/seger/driverontwikkeling/WK2/3.9/mymodule.o /home/seger/driverontwikkeling/WK2/3.9/mymodule.mod.o;  true
