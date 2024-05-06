@@ -720,6 +720,16 @@ deps_/root/driverontwikkeling/WK2/code/mymodule.o := \
     $(wildcard include/config/indirect/pio.h) \
   include/linux/fwnode.h \
   include/linux/vmalloc.h \
+  include/linux/uaccess.h \
+  arch/arm/include/asm/uaccess.h \
+    $(wildcard include/config/cpu/sw/domain/pan.h) \
+    $(wildcard include/config/cpu/use/domains.h) \
+    $(wildcard include/config/uaccess/with/memcpy.h) \
+  arch/arm/include/asm/domain.h \
+    $(wildcard include/config/io/36.h) \
+    $(wildcard include/config/cpu/cp15/mmu.h) \
+  arch/arm/include/generated/asm/extable.h \
+  include/asm-generic/extable.h \
 
 /root/driverontwikkeling/WK2/code/mymodule.o: $(deps_/root/driverontwikkeling/WK2/code/mymodule.o)
 

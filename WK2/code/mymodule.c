@@ -3,6 +3,7 @@
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/io.h>
+#include <linux/uaccess.h>
 
 MODULE_LICENSE("Dual BSD/GPL");
 
@@ -11,13 +12,13 @@ MODULE_LICENSE("Dual BSD/GPL");
 static struct cdev my_cdev;
 
 /* PIN */
-#define PIN 19
+#define PIN 18
 
 /* base address */
 #define GPIO1_ADDR 0x4804c000
 
 /* register offsets in uint32_t sizes */
-#define GPIO_OE 0x4D // 0x134
+#define GPIO_OE 0x4D // 0x134 all shifted >> 2
 #define GPIO_DATAIN 0x4E // 0x138
 #define GPIO_CLEARDATAOUT 0x64 // 0x190
 #define GPIO_SETDATAOUT 0x65 // 0x194
@@ -62,6 +63,28 @@ void setLed(bool state){
 	}
 }
 
+void toggleLed(void){
+	static bool ledstate = false;
+
+	setLed(ledstate);
+
+	ledstate = !ledstate;
+}
+
+bool getLedState(void){
+	uint32_t ledState = 0;
+	/* output instellen */
+	gpio1 = ioremap( GPIO1_ADDR, GPIO_MAX * sizeof(uint32_t) );
+	barrier();
+	ledState = ioread32( gpio1 + GPIO_DATAIN );
+	rmb();
+	iounmap(gpio1);
+
+	printk(KERN_ALERT "ledState: %d\n", (ledState & (1<<PIN)));
+
+	return (ledState & (1<<PIN)) >> PIN;
+}
+
 static int hello_open(struct inode* inode, struct file* file) {
     printk(KERN_ALERT "hello_open()\n");
     return 0;
@@ -73,41 +96,44 @@ static int hello_release(struct inode* inode, struct file* file) {
 }
 
 static ssize_t hello_read(struct file* file, char __user* buf, size_t lbuf, loff_t* ppos) {
-//     static bool isRead = false;
-// 
-//     char temp_write_buffer[100] = {0};
-//     printk(KERN_ALERT "hello_read() %zu\n", lbuf);
-// 
-//     if (isRead == true) {
-//         isRead = false;
-//         return 0;
-//     }
-// 
-//     if (lbuf < 3) {
-//         printk(KERN_ALERT "Insufficient buffer size\n");
-//         return -EINVAL;
-//     }
-// 
-//     temp_write_buffer[0] = 'h';
-//     temp_write_buffer[1] = '2';
-//     temp_write_buffer[2] = '\n';
-// 
-//     if (copy_to_user(buf, temp_write_buffer, 3)) {
-//         printk(KERN_ALERT "Failed to copy data to user space\n");
-//         return -EFAULT;
-//     }
-// 
-//     *ppos += 3;
-// 
-//     isRead = true;
-//     return 3;
-    setLed(true);
-    return 0;
+    static bool isRead = false;
+
+    char temp_write_buffer[100] = {0};
+    printk(KERN_ALERT "hello_read()\n");
+
+    if (isRead == true) {
+        isRead = false;
+        return 0;
+    }
+
+    if (lbuf < 3) {
+        printk(KERN_ALERT "Insufficient buffer size\n");
+        return -EINVAL;
+    }
+    
+    char ledisuit[] = "0\n";
+    char ledisaan[] = "1\n";
+
+    if (getLedState()){
+	    if (copy_to_user(buf, ledisaan, 2)) {
+		printk(KERN_ALERT "Failed to copy data to user space\n");
+		return -EFAULT;
+	    }
+    } else {
+	    if (copy_to_user(buf, ledisuit, 2)) {
+		printk(KERN_ALERT "Failed to copy data to user space\n");
+		return -EFAULT;
+	    }
+    }
+
+    *ppos += 2;
+    isRead = true;
+    return 2;
 }
 
 static ssize_t hello_write(struct file* file, const char __user* buf, size_t lbuf, loff_t* ppos) {
     printk(KERN_ALERT "hello_write()\n");
-    setLed(false);
+    toggleLed();
     return lbuf;
 }
 
