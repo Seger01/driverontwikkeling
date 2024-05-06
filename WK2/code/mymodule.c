@@ -29,7 +29,7 @@ uint32_t* gpio1;
 uint32_t oe;
 
 
-void setOutput(void){
+void setPinMode(void){
 	/* output instellen */
 	gpio1 = ioremap( GPIO1_ADDR, GPIO_MAX * sizeof(uint32_t) );
 	barrier();
@@ -40,14 +40,26 @@ void setOutput(void){
 	iounmap(gpio1);
 }
 
-void setLed(void){
-	/* ledje aan en uit zetten */
-	gpio1 = ioremap(GPIO1_ADDR, GPIO_MAX);
-	barrier();
-	iowrite32( (1<<PIN), gpio1 + GPIO_SETDATAOUT ); // Pin 19 aan
-	iowrite32( (1<<PIN), gpio1 + GPIO_CLEARDATAOUT ); // Pin 19 uit
-	wmb(); // write memory barrier
-	iounmap(gpio1);
+void setLed(bool state){
+	if (state){
+		/* ledje aan en uit zetten */
+		gpio1 = ioremap(GPIO1_ADDR, GPIO_MAX);
+		barrier();
+		iowrite32( (1<<PIN), gpio1 + GPIO_SETDATAOUT ); // Pin 19 aan
+
+		// iowrite32( (1<<PIN), gpio1 + GPIO_CLEARDATAOUT ); // Pin 19 uit
+		wmb(); // write memory barrier
+		iounmap(gpio1);
+	} else {
+		/* ledje aan en uit zetten */
+		gpio1 = ioremap(GPIO1_ADDR, GPIO_MAX);
+		barrier();
+		// iowrite32( (1<<PIN), gpio1 + GPIO_SETDATAOUT ); // Pin 19 aan
+
+		iowrite32( (1<<PIN), gpio1 + GPIO_CLEARDATAOUT ); // Pin 19 uit
+		wmb(); // write memory barrier
+		iounmap(gpio1);
+	}
 }
 
 static int hello_open(struct inode* inode, struct file* file) {
@@ -89,11 +101,13 @@ static ssize_t hello_read(struct file* file, char __user* buf, size_t lbuf, loff
 // 
 //     isRead = true;
 //     return 3;
+    setLed(true);
     return 0;
 }
 
 static ssize_t hello_write(struct file* file, const char __user* buf, size_t lbuf, loff_t* ppos) {
     printk(KERN_ALERT "hello_write()\n");
+    setLed(false);
     return lbuf;
 }
 
@@ -132,6 +146,7 @@ static int hello_init(void) {
     }
 
     printk(KERN_ALERT "Registered character device\n");
+    setPinMode();
     return 0;
 }
 
