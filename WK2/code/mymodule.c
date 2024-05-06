@@ -28,10 +28,27 @@ static struct cdev my_cdev;
 uint32_t* gpio1;
 uint32_t oe;
 
-void setOutput(void);
-void setLed(void);
 
+void setOutput(void){
+	/* output instellen */
+	gpio1 = ioremap( GPIO1_ADDR, GPIO_MAX * sizeof(uint32_t) );
+	barrier();
+	oe = ioread32( gpio1 + GPIO_OE );
+	rmb();
+	iowrite32( (oe & (~(1<<PIN))), gpio1 + GPIO_OE );
+	wmb(); // write memory barrier
+	iounmap(gpio1);
+}
 
+void setLed(void){
+	/* ledje aan en uit zetten */
+	gpio1 = ioremap(GPIO1_ADDR, GPIO_MAX);
+	barrier();
+	iowrite32( (1<<PIN), gpio1 + GPIO_SETDATAOUT ); // Pin 19 aan
+	iowrite32( (1<<PIN), gpio1 + GPIO_CLEARDATAOUT ); // Pin 19 uit
+	wmb(); // write memory barrier
+	iounmap(gpio1);
+}
 
 static int hello_open(struct inode* inode, struct file* file) {
     printk(KERN_ALERT "hello_open()\n");
@@ -121,27 +138,6 @@ static int hello_init(void) {
 static void hello_exit(void) {
     printk(KERN_ALERT "Goodbye, world\n");
     cdev_del(&my_cdev);
-}
-
-void setOutput(void){
-	/* output instellen */
-	gpio1 = ioremap( GPIO1_ADDR, GPIO_MAX * sizeof(uint32_t) );
-	barrier();
-	oe = ioread32( gpio1 + GPIO_OE );
-	rmb();
-	iowrite32( (oe & (~(1<<PIN))), gpio1 + GPIO_OE );
-	wmb(); // write memory barrier
-	iounmap(gpio1);
-}
-
-void setLed(void){
-	/* ledje aan en uit zetten */
-	gpio1 = ioremap(GPIO1_ADDR, GPIO_MAX);
-	barrier();
-	iowrite32( (1<<PIN), gpio1 + GPIO_SETDATAOUT ); // Pin 19 aan
-	iowrite32( (1<<PIN), gpio1 + GPIO_CLEARDATAOUT ); // Pin 19 uit
-	wmb(); // write memory barrier
-	iounmap(gpio1);
 }
 
 module_init(hello_init);
