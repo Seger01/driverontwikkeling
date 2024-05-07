@@ -31,58 +31,62 @@ uint32_t oe;
 
 
 void setPinMode(void){
-	/* output instellen */
-	gpio1 = ioremap( GPIO1_ADDR, GPIO_MAX * sizeof(uint32_t) );
-	barrier();
-	oe = ioread32( gpio1 + GPIO_OE );
-	rmb();
-	iowrite32( (oe & (~(1<<PIN))), gpio1 + GPIO_OE );
-	wmb(); // write memory barrier
-	iounmap(gpio1);
+        /* output instellen */
+        gpio1 = ioremap( GPIO1_ADDR, GPIO_MAX * sizeof(uint32_t) );
+        barrier();
+        oe = ioread32( gpio1 + GPIO_OE );
+        rmb();
+        iowrite32( (oe & (~(1<<PIN))), gpio1 + GPIO_OE );
+        wmb(); // write memory barrier
+        iounmap(gpio1);
 }
 
 void setLed(bool state){
-	if (state){
-		/* ledje aan en uit zetten */
-		gpio1 = ioremap(GPIO1_ADDR, GPIO_MAX);
-		barrier();
-		iowrite32( (1<<PIN), gpio1 + GPIO_SETDATAOUT ); // Pin 19 aan
+        if (state){
+                /* ledje aan en uit zetten */
+                gpio1 = ioremap(GPIO1_ADDR, GPIO_MAX);
+                barrier();
+                iowrite32( (1<<PIN), gpio1 + GPIO_SETDATAOUT ); // Pin 19 aan
 
-		// iowrite32( (1<<PIN), gpio1 + GPIO_CLEARDATAOUT ); // Pin 19 uit
-		wmb(); // write memory barrier
-		iounmap(gpio1);
-	} else {
-		/* ledje aan en uit zetten */
-		gpio1 = ioremap(GPIO1_ADDR, GPIO_MAX);
-		barrier();
-		// iowrite32( (1<<PIN), gpio1 + GPIO_SETDATAOUT ); // Pin 19 aan
+                // iowrite32( (1<<PIN), gpio1 + GPIO_CLEARDATAOUT ); // Pin 19 uit
+                wmb(); // write memory barrier
+                iounmap(gpio1);
+        } else {
+                /* ledje aan en uit zetten */
+                gpio1 = ioremap(GPIO1_ADDR, GPIO_MAX);
+                barrier();
+                // iowrite32( (1<<PIN), gpio1 + GPIO_SETDATAOUT ); // Pin 19 aan
 
-		iowrite32( (1<<PIN), gpio1 + GPIO_CLEARDATAOUT ); // Pin 19 uit
-		wmb(); // write memory barrier
-		iounmap(gpio1);
-	}
+                iowrite32( (1<<PIN), gpio1 + GPIO_CLEARDATAOUT ); // Pin 19 uit
+                wmb(); // write memory barrier
+                iounmap(gpio1);
+        }
 }
 
 void toggleLed(void){
-	static bool ledstate = false;
+        static bool ledstate = false;
 
-	setLed(ledstate);
+        setLed(ledstate);
 
-	ledstate = !ledstate;
+        ledstate = !ledstate;
 }
 
 bool getLedState(void){
-	uint32_t ledState = 0;
-	/* output instellen */
-	gpio1 = ioremap( GPIO1_ADDR, GPIO_MAX * sizeof(uint32_t) );
-	barrier();
-	ledState = ioread32( gpio1 + GPIO_DATAIN );
-	rmb();
-	iounmap(gpio1);
+        gpio1 = ioremap(GPIO1_ADDR , GPIO_MAX * sizeof(uint32_t));
+        if (!gpio1) {
+                pr_err("Failed to map GPIO1 address\n");
+                return -EFAULT;
+        }
 
-	printk(KERN_ALERT "ledState: %d\n", (ledState & (1<<PIN)));
+        int gpio_value = ioread32(gpio1 + GPIO_DATAIN);
+        gpio_value = (gpio_value >> PIN);
+        gpio_value = (gpio_value & 0x01);
+        // pr_alert("GPIO1 value: 0x%x\n", gpio_value);
 
-	return (ledState & (1<<PIN)) >> PIN;
+        // printk(KERN_ALERT "ledState: %d\n", gpio_value);
+        iounmap(gpio1);
+
+        return gpio_value;
 }
 
 static int hello_open(struct inode* inode, struct file* file) {
@@ -97,33 +101,31 @@ static int hello_release(struct inode* inode, struct file* file) {
 
 static ssize_t hello_read(struct file* file, char __user* buf, size_t lbuf, loff_t* ppos) {
     static bool isRead = false;
+    char ledisuit[] = "0\n";
+    char ledisaan[] = "1\n";
 
-    char temp_write_buffer[100] = {0};
-    printk(KERN_ALERT "hello_read()\n");
+    // printk(KERN_ALERT "hello_read()\n");
 
-    if (isRead == true) {
-        isRead = false;
+    if (*ppos != 0){
         return 0;
-    }
+}
 
     if (lbuf < 3) {
         printk(KERN_ALERT "Insufficient buffer size\n");
         return -EINVAL;
     }
     
-    char ledisuit[] = "0\n";
-    char ledisaan[] = "1\n";
 
     if (getLedState()){
-	    if (copy_to_user(buf, ledisaan, 2)) {
-		printk(KERN_ALERT "Failed to copy data to user space\n");
-		return -EFAULT;
-	    }
+            if (copy_to_user(buf, ledisaan, 2)) {
+                printk(KERN_ALERT "Failed to copy data to user space\n");
+                return -EFAULT;
+            }
     } else {
-	    if (copy_to_user(buf, ledisuit, 2)) {
-		printk(KERN_ALERT "Failed to copy data to user space\n");
-		return -EFAULT;
-	    }
+            if (copy_to_user(buf, ledisuit, 2)) {
+                printk(KERN_ALERT "Failed to copy data to user space\n");
+                return -EFAULT;
+            }
     }
 
     *ppos += 2;
