@@ -100,7 +100,6 @@ static int hello_release(struct inode* inode, struct file* file) {
 }
 
 static ssize_t hello_read(struct file* file, char __user* buf, size_t lbuf, loff_t* ppos) {
-    static bool isRead = false;
     char ledisuit[] = "0\n";
     char ledisaan[] = "1\n";
 
@@ -108,7 +107,7 @@ static ssize_t hello_read(struct file* file, char __user* buf, size_t lbuf, loff
 
     if (*ppos != 0){
         return 0;
-}
+    }
 
     if (lbuf < 3) {
         printk(KERN_ALERT "Insufficient buffer size\n");
@@ -129,7 +128,6 @@ static ssize_t hello_read(struct file* file, char __user* buf, size_t lbuf, loff
     }
 
     *ppos += 2;
-    isRead = true;
     return 2;
 }
 
