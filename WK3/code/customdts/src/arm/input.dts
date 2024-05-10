@@ -1991,6 +1991,13 @@
    linux,default-trigger = "mmc1";
    default-state = "off";
   };
+
+  led6 {
+   label = "beaglebone:green:usr4";
+   gpios = <&gpio1 18 0>;
+   linux,default-trigger = "heartbeat";
+   default-state = "off";
+  };
  };
 
  vmmcsd_fixed: fixedregulator0 {
@@ -2594,7 +2601,7 @@
 
  chosen {
   base_dtb = "am335x-boneblack.dts";
-  base_dtb_timestamp = "Fri May 10 19:10:56 2024";
+  base_dtb_timestamp = "Fri May 10 19:26:25 2024";
  };
 };
 

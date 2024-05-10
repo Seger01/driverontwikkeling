@@ -1985,18 +1985,10 @@
    default-state = "off";
   };
 
-
   led5 {
    label = "beaglebone:green:usr3";
    gpios = <&gpio1 24 0>;
    linux,default-trigger = "mmc1";
-   default-state = "off";
-  };
-
-  led6 {
-   label = "beaglebone:green:usr0";
-   gpios = <&gpio1 18 0>;
-   linux,default-trigger = "heartbeat";
    default-state = "off";
   };
  };
@@ -2602,7 +2594,7 @@
 
  chosen {
   base_dtb = "am335x-boneblack.dts";
-  base_dtb_timestamp = "Fri May 10 19:10:56 2024";
+  base_dtb_timestamp = "Fri May 10 19:26:25 2024";
  };
 };
 
