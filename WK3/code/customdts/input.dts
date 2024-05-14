@@ -1986,16 +1986,9 @@
   };
 
   led5 {
-   label = "beaglebone:green:usr3";
+   label = "beaglebone:green:usr4";
    gpios = <&gpio1 24 0>;
    linux,default-trigger = "mmc1";
-   default-state = "off";
-  };
-
-  led6 {
-   label = "beaglebone:green:usr4";
-   gpios = <&gpio1 18 0>;
-   linux,default-trigger = "heartbeat";
    default-state = "off";
   };
  };
