@@ -1,1 +1,1 @@
-cmd_/root/driverontwikkeling/WK2/code/mymodule.ko := ld -r  -EL -T ./scripts/module-common.lds -T ./arch/arm/kernel/module.lds  --build-id  -o /root/driverontwikkeling/WK2/code/mymodule.ko /root/driverontwikkeling/WK2/code/mymodule.o /root/driverontwikkeling/WK2/code/mymodule.mod.o ;  true
+cmd_/root/driverontwikkeling/WK3/code/mymodule.ko := ld -r  -EL -T ./scripts/module-common.lds -T ./arch/arm/kernel/module.lds  --build-id  -o /root/driverontwikkeling/WK3/code/mymodule.ko /root/driverontwikkeling/WK3/code/mymodule.o /root/driverontwikkeling/WK3/code/mymodule.mod.o ;  true
