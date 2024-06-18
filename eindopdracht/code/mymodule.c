@@ -12,12 +12,14 @@
 #include <linux/ioport.h>
 #include <linux/i2c.h>
 
+#define DEVICE_NAME "i2c_custom"
+
 static struct i2c_client *i2c_client;
 static struct class *i2c_custom_class;
 static struct device *i2c_custom_device;
 
-static int i2c_custom_remove(struct platform_device *pdev);
-static int i2c_custom_probe(struct platform_device *pdev);
+static int platform_driver_remove(struct platform_device *pdev);
+static int my_platform_driver_probe(struct platform_device *pdev);
 
 static ssize_t my_show(struct device *dev, struct device_attribute *attr, char *buf);
 static ssize_t my_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t count);
@@ -26,15 +28,15 @@ static int my_i2c_write_byte(struct i2c_client *client, u8 reg, u8 value);
 static int my_i2c_read_byte(struct i2c_client *client, u8 reg, u8 *value);
 
 static const struct of_device_id my_driver_ids[] = {
-    { .compatible = "i2c_custom" },
+    { .compatible = DEVICE_NAME },
     { }
 };
 
 static struct platform_driver my_driver = {
-    .probe = i2c_custom_probe,
-    .remove = i2c_custom_remove,
+    .probe = my_platform_driver_probe,
+    .remove = platform_driver_remove,
     .driver = {
-        .name = "i2c_custom",
+        .name = DEVICE_NAME,
         .of_match_table = of_match_ptr(my_driver_ids),
     },
 };
@@ -67,8 +69,8 @@ static ssize_t my_store(struct device *dev, struct device_attribute *attr, const
         return ret;
     }
 
-    printk(KERN_ALERT "store action: %d", value);
-    printk(KERN_ALERT "store action: %d", value);
+    printk(KERN_ALERT "store action: %ld", value);
+    printk(KERN_ALERT "store action: %ld", value);
 
     ret = my_i2c_write_byte(i2c_client, reg, (u8)value);
     if (ret) {
@@ -134,7 +136,7 @@ static int my_i2c_read_byte(struct i2c_client *client, u8 reg, u8 *value)
     return 0;
 }
 
-static int i2c_custom_probe(struct platform_device *pdev) {
+static int my_platform_driver_probe(struct platform_device *pdev) {
     struct device_node *np = pdev->dev.of_node;
     struct i2c_adapter *adapter;
     struct i2c_board_info info;
@@ -212,7 +214,7 @@ static int i2c_custom_probe(struct platform_device *pdev) {
     return 0;
 }
 
-static int i2c_custom_remove(struct platform_device *pdev) {
+static int platform_driver_remove(struct platform_device *pdev) {
     printk(KERN_INFO "my_platform_device: Removing...\n");
     i2c_unregister_device(i2c_client);
 
@@ -230,7 +232,7 @@ static void i2c_custom_exit(void) {
 
 static int i2c_custom_init(void) {
     int result;
-    i2c_custom_class = class_create(THIS_MODULE, "i2c_custom");
+    i2c_custom_class = class_create(THIS_MODULE, DEVICE_NAME);
     if (IS_ERR(i2c_custom_class)) {
         return PTR_ERR(i2c_custom_class);
     }
@@ -244,3 +246,8 @@ static int i2c_custom_init(void) {
 
 module_init(i2c_custom_init);
 module_exit(i2c_custom_exit);
+
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("Seger");
+MODULE_DESCRIPTION("My I2C PlatformDriver with Communication Functions");
+MODULE_VERSION("1.0");
