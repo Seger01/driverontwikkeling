@@ -1,0 +1,1 @@
+cmd_/root/driverontwikkeling/eindopdrachtplatform/code/mymodule.ko := ld -r  -EL -T ./scripts/module-common.lds -T ./arch/arm/kernel/module.lds  --build-id  -o /root/driverontwikkeling/eindopdrachtplatform/code/mymodule.ko /root/driverontwikkeling/eindopdrachtplatform/code/mymodule.o /root/driverontwikkeling/eindopdrachtplatform/code/mymodule.mod.o ;  true
